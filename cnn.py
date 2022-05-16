@@ -8,6 +8,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import torch
+from sklearn.metrics import classification_report
 import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
@@ -34,6 +35,7 @@ class Net(nn.Module):
         self.pool = nn.MaxPool2d(kernel_size=(1, 2),stride=(1,2))
         #lf.soft = nn.Softmax(dim = 1)
         self.fc=nn.Linear(2520,7)
+        self.soft = nn.Softmax
 
     def forward(self, x):
       x = self.conv1(x)
@@ -56,6 +58,7 @@ class Net(nn.Module):
       #print(x.shape)
       x = x.view(7,2520)
       x = self.fc(x)
+      #print(self.soft(x))
       #print(x.shape)
       #x = self.soft(x)
       return x
@@ -144,4 +147,5 @@ with torch.no_grad():
 print(f"test acc:{test_total_acc/len(test_dataset)*100}")
 cm = confusion_matrix(true_list, pred_list)
 sns.heatmap(cm, annot=True, cmap='Blues')
+print(classification_report(true_list, pred_list, labels=[0,1,2,3,4,5,6]))
 plt.savefig('sklearn_confusion_matrix_annot_blues.png')
